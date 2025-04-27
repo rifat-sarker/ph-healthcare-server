@@ -3,8 +3,6 @@ import prisma from "../../utils/prisma";
 import { adminSearchableFields } from "./admin.constant";
 import calculatePagination from "../../../helpers/paginationHelpers";
 
-
-
 const getAllAdminFromDB = async (params: any, options: any) => {
   const { page, limit, skip } = calculatePagination(options);
   const { searchTerm, ...filterData } = params;
@@ -45,7 +43,18 @@ const getAllAdminFromDB = async (params: any, options: any) => {
             createdAt: "desc",
           },
   });
-  return result;
+
+  const totalCount = await prisma.admin.count({
+    where: whereConditions,
+  });
+  return {
+    meta: {
+      page,
+      limit,
+      totalCount,
+    },
+    data: result,
+  };
 };
 
 export const adminSerivce = {
