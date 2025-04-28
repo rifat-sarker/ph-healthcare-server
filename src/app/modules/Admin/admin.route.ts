@@ -4,13 +4,9 @@ import { adminController } from "./admin.controller";
 const router = express.Router();
 
 router.get("/", adminController.getAllAdmin);
-router.get(
-  "/:id",
-  adminController.getByIdFromDB
-);
+router.get("/:id", adminController.getByIdFromDB);
 
-router.patch(
-  "/:id",
-  adminController.updateIntoDB
-);
+router.patch("/:id", adminController.updateIntoDB);
+
+router.delete("/:id", adminController.deleteFromDB);
 export const adminRoutes = router;
