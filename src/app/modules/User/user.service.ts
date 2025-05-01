@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import prisma from "../../utils/prisma";
 
 
-
+//create admin into db
 const createAdmin = async (data: any) => {
   const hashedPassword = await bcrypt.hash(data.password, 10)
   const userData = {
@@ -24,6 +24,8 @@ const createAdmin = async (data: any) => {
   });
   return result;
 };
+
+
 
 export const userSerice = {
   createAdmin,

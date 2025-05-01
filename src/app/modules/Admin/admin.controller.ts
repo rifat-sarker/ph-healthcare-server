@@ -63,6 +63,9 @@ const updateIntoDB = async (req: Request, res: Response) => {
   }
 };
 
+
+// delete 
+
 const deleteFromDB = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
