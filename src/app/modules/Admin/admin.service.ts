@@ -1,7 +1,40 @@
-import { Admin, Prisma, UserStatus } from "@prisma/client";
+import { Admin, Prisma, UserRole, UserStatus } from "@prisma/client";
 import prisma from "../../utils/prisma";
 import { adminSearchableFields } from "./admin.constant";
 import calculatePagination from "../../../helpers/paginationHelpers";
+import { IFile } from "../../inferfaces/file";
+import { fileUploader } from "../../../helpers/fileUploader";
+
+const createAdmin = async (req: Request): Promise<Admin> => {
+  const file = req.file as IFile;
+
+  if (file) {
+    const uploadToCloudinary = await fileUploader.uploadToCloudinary(file);
+    req.body.admin.profilePhoto = uploadToCloudinary?.secure_url;
+  }
+
+  const hashedPassword: string = await bcrypt.hash(req.body.password, 12);
+
+  const userData = {
+    email: req.body.admin.email,
+    password: hashedPassword,
+    role: UserRole.ADMIN,
+  };
+
+  const result = await prisma.$transaction(async (transactionClient) => {
+    await transactionClient.user.create({
+      data: userData,
+    });
+
+    const createdAdminData = await transactionClient.admin.create({
+      data: req.body.admin,
+    });
+
+    return createdAdminData;
+  });
+
+  return result;
+};
 
 const getAllAdminFromDB = async (params: any, options: any) => {
   const { page, limit, skip } = calculatePagination(options);
@@ -146,6 +179,7 @@ const softDeleteFromDB = async (id: string): Promise<Admin | null> => {
 };
 
 export const AdminService = {
+  createAdmin,
   getAllAdminFromDB,
   getByIdFromDB,
   updateIntoDB,

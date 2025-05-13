@@ -2,6 +2,18 @@ import { Request, Response } from "express";
 import { AdminService } from "./admin.service";
 import pick from "../../../shared/pick";
 import { adminFilterableFields } from "./admin.constant";
+import catchAsync from "../../../shared/catchAsync";
+import sendResponse from "../../../shared/sendResponse";
+
+const createAdmin = catchAsync(async (req: Request, res: Response) => {
+  const result = await userService.createAdmin(req);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Admin Created successfuly!",
+    data: result,
+  });
+});
 
 const getAllAdmin = async (req: Request, res: Response) => {
   try {
@@ -106,6 +118,7 @@ const softdeleteFromDB = async (req: Request, res: Response) => {
 };
 
 export const adminController = {
+  createAdmin,
   getAllAdmin,
   getByIdFromDB,
   updateIntoDB,
